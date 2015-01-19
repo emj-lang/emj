@@ -1,5 +1,11 @@
-📦 = namespace
+📦 = namespace (package)
 🎨 = struct
 ✉ = union
+
+visibility/access modifiers:
+🙈 = private
+🐵 = public
+🙉 = namespace/package-private
+🙊 = protected (TODO add classes)
 
 TODO more
