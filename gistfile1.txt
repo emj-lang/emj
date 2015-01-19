@@ -8,4 +8,10 @@ visibility/access modifiers:
 🙉 = namespace/package-private
 🙊 = protected (TODO add classes)
 
+types:
+🔢 = integer (as in C)
+🔣 = char (as in C)
+💯 = long (as in C)
+💯 💯 = long long (as in C)
+
 TODO more
