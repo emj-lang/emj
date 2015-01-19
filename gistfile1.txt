@@ -10,7 +10,7 @@ visibility/access modifiers:
 
 types:
 🔢 = integer (as in C)
-🔣 = char (as in C)
+🔤 = char (as in C)
 💯 = long (as in C)
 💯 💯 = long long (as in C)
 
