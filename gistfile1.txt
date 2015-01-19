@@ -1,0 +1,5 @@
+📦 = namespace
+🎨 = struct
+✉ = union
+
+TODO more
