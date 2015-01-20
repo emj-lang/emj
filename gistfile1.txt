@@ -1,4 +1,4 @@
-📦 = namespace (package)
+﻿📦 = namespace (package)
 🎨 = struct
 ✉ = union
 
