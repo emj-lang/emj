@@ -7,6 +7,7 @@ visibility/access modifiers:
 🐵 = public
 🙉 = namespace/package-private
 🙊 = protected (TODO add classes)
+⚓ = static
 
 types:
 🔢 = integer (as in C)
