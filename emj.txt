@@ -15,4 +15,12 @@ types:
 💯 = long (as in C)
 💯 💯 = long long (as in C)
 
+type modifiers:
+➡ = pointer (as in C)
+
+statements:
+↩ = return
+
+expressions:
+
 TODO more
