@@ -2,7 +2,7 @@ types:
 ✉ = struct  
 🎨 = union  
 📜 = enum  
-🏭 = clas
+🏭 = class
 
 primitive types:  
 🔢 = integer (as in C)  
@@ -24,7 +24,7 @@ type modifiers:
 
 other modifiers:  
 ❓ = abstract  
-﻿📦 = namespace (package)  
+📦 = namespace (package)  
 ❔ = interface
 
 statements:  
