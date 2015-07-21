@@ -1,35 +1,57 @@
-types:  
-✉ = struct  
-🎨 = union  
-📜 = enum  
-🏭 = class
+# Keywords / special names
 
-primitive types:  
-🔢 = integer (as in C)  
-🔤 = char (as in C)  
-💯 = long (as in C)  
-💯 💯 = long long (as in C)
+## Types
 
-visibility/access modifiers:  
-🙈 = private  
-🐵 = public  
-🙉 = namespace/package-private  
-🙊 = protected (TODO add classes)  
-⚓ = static
+### Object types(?)
 
-type modifiers:  
-➡ = pointer (as in C)  
-➖ = can go negative (aka signed)  
-➕ = cannot go negative (aka unsigned)
+- ✉ = Struct
+- 🎨 = Union
+- 📜 = Enum
+- 🏭 = Class
 
-other modifiers:  
-❓ = abstract  
-📦 = namespace (package)  
-❔ = interface
+### Primitive types
 
-statements:  
-↩ = return
+- 🔢 = Integer (32 bits, unless modified)
+- 🔤 = Character (byte-sized (8-bits) integer)
 
-expressions:
+## Modifiers
 
-TODO more
+### Primitive type modifiers (e.g. ➖🔤 = signed char)
+
+- ➖ = Signed
+- ➕ = Unsigned
+
+### Integer type modifiers (e.g. 💯🔢 = 64-bits integer)
+
+- 💯 = 64-bits
+- 💔 = 16-bits
+
+### Visibility/access modifiers
+
+- 🙈 = Private
+- 🐵 = Public
+- 🙉 = Namespace/package-private
+- 🙊 = Protected
+- ⚓ = Static
+
+### Type modifiers
+
+- ➡ = Pointer
+
+### Other modifiers
+
+- ❓ = Abstract
+- 📦 = Namespace (package)
+- ❔ = Interface
+
+## Code structure
+
+### Statements
+
+- ↩ = Return
+
+### Expressions
+
+- TODO
+
+## TODO more

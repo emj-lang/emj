@@ -5,3 +5,7 @@ Emj is the first emoji-only programming language. It was heavily inspired by Emo
 For support, the following options are available:
 
 IRC channel: #emj @ freenode
+
+# Donate?
+
+You can donate [bitcoin](bitcoin:14hjC2fq2aJAbaEZK7jNYKZq9YfK5uzDRF?label=emj&message=Donation%20to%20the%20Emj%20Programming%20Language)
