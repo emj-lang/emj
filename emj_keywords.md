@@ -1,13 +1,14 @@
-# Keywords / special names
+# Keywords
 
 ## Types
 
 ### Object types(?)
 
 - ✉ = Struct
-- 🎨 = Union
-- 📜 = Enum
+- 🎨 = Union (Or should I go with tag-unions a-la-Rust?)
+- 📃 = Enum
 - 🏭 = Class
+- 📲 = Function
 
 ### Primitive types
 
@@ -16,10 +17,10 @@
 
 ## Modifiers
 
-### Primitive type modifiers (e.g. ➖🔤 = signed char)
+### Primitive type modifiers (e.g. ↕️🔤 = signed char)
 
-- ➖ = Signed
-- ➕ = Unsigned
+- ↕️ = Signed
+- ⬆️ = Unsigned
 
 ### Integer type modifiers (e.g. 💯🔢 = 64-bits integer)
 
@@ -49,9 +50,24 @@
 ### Statements
 
 - ↩ = Return
+- ⬅️ = Put (aka set aka equal, as in "🔢 v ⬅️ 16")
 
 ### Expressions
 
-- TODO
+- ➕ = Add
+- ➖ = Subtract/negate
+- ✖️ = Multiply
+- ➗ = Divide
+- 📖 = Left parenthesis
+- 📕 = Right parenthesis
+
+### Literals
+
+- 📝 = String delimiter
+
+### Comments
+- ✏️ = Short comment
+- ✏️📖📖 = Long comment start
+- 📕📕 = Long comment end
 
 ## TODO more
