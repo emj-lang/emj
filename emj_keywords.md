@@ -4,46 +4,19 @@
 
 ### Object types(?)
 
-- ✉ = Struct
-- 🎨 = Union (Or should I go with tag-unions a-la-Rust?)
-- 📃 = Enum
-- 🏭 = Class
 - 📲 = Function
-
-### Primitive types
-
-- 🔢 = Integer (32 bits, unless modified)
-- 🔤 = Character (byte-sized (8-bits) integer)
 
 ## Modifiers
 
-### Primitive type modifiers (e.g. ↕️🔤 = signed char)
+### Number modifiers
+
+- 🔢 = Integer (32 bits, unless modified)
+- 💯 = 64 bits (e.g. 10💯 or 💯10 = 64-bit floating point number "10", 10💯🔢 (order doesn't matter) = 64-bit integer "10")
+
+### Integer modifiers
 
 - ↕️ = Signed
 - ⬆️ = Unsigned
-
-### Integer type modifiers (e.g. 💯🔢 = 64-bits integer)
-
-- 💯 = 64-bits
-- 💔 = 16-bits
-
-### Visibility/access modifiers
-
-- 🙈 = Private
-- 🐵 = Public
-- 🙉 = Namespace/package-private
-- 🙊 = Protected
-- ⚓ = Static
-
-### Type modifiers
-
-- ➡ = Pointer
-
-### Other modifiers
-
-- ❓ = Abstract
-- 📦 = Namespace (package)
-- ❔ = Interface
 
 ## Code structure
 
@@ -51,6 +24,8 @@
 
 - ↩ = Return
 - ⬅️ = Put (aka set aka equal, as in "🔢 v ⬅️ 16")
+- ⤵️ = Code block start ("go in")
+- ⤴️ = Code block end ("go out")
 
 ### Expressions
 
@@ -61,9 +36,16 @@
 - 📖 = Left parenthesis
 - 📕 = Right parenthesis
 
+
 ### Literals
 
 - 📝 = String delimiter
+- ✔️ = True (boolean)
+- ❌ = False (boolean)
+- (0|\[1-9\]\[0-9\]\*)(.\[0-9\]\*)?(e\[+-\]\[0-9\]+)? = Decimal number
+- 0x(0|\[1-9a-fA-F\]\[0-9a-fA-F\]\*)(.\[0-9a-fA-F\]\*)?(p\[+-\]\[0-9\]+)? = Hexadecimal number
+
+(TODO: specify pattern for above)
 
 ### Comments
 - ✏️ = Short comment
