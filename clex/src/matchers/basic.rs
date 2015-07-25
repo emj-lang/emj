@@ -104,10 +104,9 @@ impl fmt::Display for Byte {
 
 impl PatternElement for Byte {
     fn compare(&self, state: &mut MatchState) -> CompareResult {
-        if state.has_next() {
-            CompareResult::Match(unsafe { state.unsafe_next() } as isize - self.b as isize)
-        } else {
-            CompareResult::End
+        match state.next() {
+            Some(b) => CompareResult::Match(b as isize - self.b as isize),
+            None => CompareResult::End
         }
     }
 }

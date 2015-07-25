@@ -6,7 +6,7 @@ use {PatternElement, MatchState, CompareResult};
 pub struct Set {
     next: Box<PatternElement>,
     elements: Vec<SetElement>,
-    negated: bool, // TODO
+    negated: bool,
 }
 
 pub enum SetElement {
@@ -21,42 +21,42 @@ pub struct Range {
 
 impl PatternElement for Set {
     fn compare(&self, state: &mut MatchState) -> CompareResult {
-        if self.negated {
-            unimplemented!() // TODO
-        }
-        let start = state.pos();
         if self.elements.is_empty() { return CompareResult::Match(0) }
-        let mut last = None;
+        let start = state.pos();
+        let mut result = None;
         for e in self.elements.iter() {
             match e {
                 &SetElement::PE(ref pe) => {
-                    match pe.compare(state) {
-                        CompareResult::Match(0) => { return CompareResult::Match(0); },
-                        e @ _ => { last = Some(e) },
+                    result = Some(pe.compare(state));
+                    if let Some(CompareResult::Match(0)) = result {
+                        break;
                     }
                 },
                 &SetElement::R(Range { ref lower, ref upper }) => {
-                    let lowermatch = lower.compare(state);
-                    last = Some(lowermatch);
-                    match last {
-                        Some(CompareResult::Match(e)) if e < 0 => { continue; },
-                        Some(CompareResult::End) => { continue; },
-                        Some(_) => {},
-                        _ => unreachable!()
+                    result = Some(lower.compare(state));
+                    match result.unwrap() {
+                        CompareResult::Match(e) if e < 0 => { continue; },
+                        CompareResult::End => { continue; },
+                        _ => {},
                     }
-                    let uppermatch = upper.compare(state);
-                    last = Some(uppermatch);
-                    match last {
-                        Some(CompareResult::Match(e)) if e > 0 => { continue; },
-                        Some(CompareResult::End) => { continue; },
-                        Some(_) => { return CompareResult::Match(0) },
-                        _ => unreachable!()
+                    result = Some(upper.compare(state));
+                    match result.unwrap() {
+                        CompareResult::Match(e) if e > 0 => { continue; },
+                        CompareResult::End => { continue; },
+                        _ => { break; },
                     }
                 },
             }
             state.set_pos(start);
         }
-        last.unwrap()
+        if self.negated {
+            match result.unwrap() {
+                CompareResult::Match(0) => CompareResult::End,
+                _ => CompareResult::Match(0),
+            }
+        } else {
+            result.unwrap()
+        }
     }
 }
 
