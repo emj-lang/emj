@@ -1,4 +1,5 @@
 // Quantifiers
+// ... ARE A PAIN IN THE ASS TO DO ;_;
 
 use std::fmt;
 use {PatternElement, MatchState, CompareResult};

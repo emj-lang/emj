@@ -4,21 +4,16 @@ use std::fmt;
 use {PatternElement, MatchState, CompareResult, MatchCapture};
 
 pub struct Group {
-    next: Box<PatternElement>,
     children: Vec<Box<PatternElement>>,
 }
 
 impl Group {
-    pub fn new(next: Box<PatternElement>, children: Vec<Box<PatternElement>>) -> Group {
-        Group { next: next, children: children }
+    pub fn new(children: Vec<Box<PatternElement>>) -> Group {
+        Group { children: children }
     }
 
     pub fn push_child(&mut self, child: Box<PatternElement>) {
         self.children.push(child)
-    }
-
-    pub fn set_next(&mut self, next: Box<PatternElement>) {
-        self.next = next
     }
 }
 
@@ -29,15 +24,26 @@ impl PatternElement for Group {
             state.push_capture(MatchCapture::Position(start));
             return CompareResult::Match(0)
         }
+        let mut result = CompareResult::Match(0);
         for c in self.children.iter() {
             match c.compare(state) {
-                CompareResult::Match(0) => {}, // just keep going
-                e @ _ => { return e }
+                CompareResult::End => { return CompareResult::End; },
+                r => {
+                    if let CompareResult::Match(0) = result {
+                        result = r;
+                    }
+                },
             }
         }
-        let end = state.pos();
-        state.push_capture(MatchCapture::Bytes { start: start, end: end });
-        self.next.compare(state)
+        match result {
+            CompareResult::Match(0) => {
+                let end = state.pos();
+                state.push_capture(MatchCapture::Bytes { start: start, end: end });
+                //self.next.compare(state)
+                CompareResult::Match(0)
+            },
+            r => r,
+        }
     }
 }
 
@@ -47,7 +53,6 @@ impl fmt::Display for Group {
         for c in self.children.iter() {
             try!(write!(f, "{}", c));
         }
-        try!(write!(f, ")"));
-        write!(f, "{}", self.next)
+        write!(f, ")")
     }
 }

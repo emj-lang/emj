@@ -80,6 +80,8 @@ pub trait PatternElement : fmt::Display {
     fn compare(&self, &mut MatchState) -> CompareResult;
 }
 
+#[allow(unused_variables)]
 pub fn parse(pattern: &[u8]) -> Result<Box<PatternElement>, String> {
+    // TODO
     unimplemented!()
 }

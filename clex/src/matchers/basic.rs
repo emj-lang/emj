@@ -4,7 +4,7 @@ use std::fmt;
 use {PatternElement, MatchState, CompareResult};
 
 
-pub struct Null; // "Null Matcher" is used when a matcher requires a "next"
+pub struct Null; // "Null Matcher" is used when a matcher requires a "next" (TODO is this needed?)
 
 impl fmt::Display for Null {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {

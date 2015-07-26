@@ -4,7 +4,6 @@ use std::fmt;
 use {PatternElement, MatchState, CompareResult};
 
 pub struct Set {
-    next: Box<PatternElement>,
     elements: Vec<SetElement>,
     negated: bool,
 }
@@ -76,7 +75,6 @@ impl fmt::Display for Set {
                 },
             }
         }
-        try!(write!(f, "]"));
-        write!(f, "{}", self.next)
+        write!(f, "]")
     }
 }
