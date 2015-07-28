@@ -4,18 +4,20 @@ use std::fmt;
 use {PatternElement, MatchState, CompareResult};
 
 pub struct Set {
+    next: Box<PatternElement>,
     elements: Vec<SetElement>,
     negated: bool,
 }
 
 pub enum SetElement {
     PE(Box<PatternElement>),
-    R(Range),
+    R { lower: Box<PatternElement>, upper: Box<PatternElement> },
 }
 
-pub struct Range {
-    lower: Box<PatternElement>,
-    upper: Box<PatternElement>,
+impl Set {
+    pub fn new(next: Box<PatternElement>, elements: Vec<SetElement>, negated: bool) -> Set {
+        Set { next: next, elements: elements, negated: negated }
+    }
 }
 
 impl PatternElement for Set {
@@ -31,7 +33,7 @@ impl PatternElement for Set {
                         break;
                     }
                 },
-                &SetElement::R(Range { ref lower, ref upper }) => {
+                &SetElement::R{ ref lower, ref upper } => {
                     result = Some(lower.compare(state));
                     match result.unwrap() {
                         CompareResult::Match(e) if e < 0 => { continue; },
@@ -45,6 +47,24 @@ impl PatternElement for Set {
                         _ => { break; },
                     }
                 },
+            }
+            if self.negated {
+                match result.unwrap() {
+                    CompareResult::Match(0) => { return CompareResult::End; },
+                    CompareResult::End => {},
+                    _ => match self.next.compare(state) {
+                        r @ CompareResult::Match(0) => { return r; },
+                        _ => {},
+                    },
+                }
+            } else {
+                match result.unwrap() {
+                    CompareResult::Match(0) => match self.next.compare(state) {
+                        r @ CompareResult::Match(0) => { return r; },
+                        _ => {},
+                    },
+                    _ => {},
+                }
             }
             state.set_pos(start);
         }
@@ -68,13 +88,14 @@ impl fmt::Display for Set {
         for e in self.elements.iter() {
             match e {
                 &SetElement::PE(ref pe) => { try!(write!(f, "{}", pe)); },
-                &SetElement::R(Range { ref lower, ref upper }) => {
+                &SetElement::R{ ref lower, ref upper } => {
                     try!(write!(f, "{}", lower));
                     try!(write!(f, ":"));
                     try!(write!(f, "{}", upper));
                 },
             }
         }
-        write!(f, "]")
+        try!(write!(f, "]"));
+        write!(f, "{}", self.next)
     }
 }

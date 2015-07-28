@@ -19,13 +19,16 @@ impl Root {
 
 impl PatternElement for Root {
     fn compare(&self, state: &mut MatchState) -> CompareResult {
+        let mut result = CompareResult::Match(0);
         for c in self.children.iter() {
             match c.compare(state) {
                 CompareResult::Match(0) => {},
-                r => { return r; },
+                r => if let CompareResult::Match(0) = result {
+                    result = r;
+                },
             }
         }
-        CompareResult::Match(0)
+        result
     }
 }
 

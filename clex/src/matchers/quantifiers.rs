@@ -24,13 +24,11 @@ impl Quantifier {
 
 impl PatternElement for Quantifier {
     fn compare(&self, state: &mut MatchState) -> CompareResult {
-        let start = state.pos();
-        let first = self.quantified.compare(state);
         match self.quantification {
-            Quantification::Greedy => {
-                match first {
+            Quantification::Greedy => { // TODO check
+                match self.quantified.compare(state) {
                     CompareResult::Match(0) => {},
-                    e @ _ => { return e }
+                    r => { return r }
                 }
                 let mut matched: Vec<usize> = Vec::new();
                 matched.push(state.pos());
@@ -40,36 +38,38 @@ impl PatternElement for Quantifier {
                         _ => { break },
                     }
                 }
+                let mut last = None;
                 for backtrack in matched.iter().rev() {
                     state.set_pos(*backtrack);
                     match self.next.compare(state) {
                         CompareResult::Match(0) => { return CompareResult::Match(0) },
-                        _ => {},
+                        r => { last = Some(r) },
                     }
                 }
-                state.set_pos(matched[0]);
-                self.next.compare(state)
+                last.unwrap()
             },
             Quantification::NonGreedy => {
-                match first {
-                    CompareResult::Match(0) => {},
-                    e @ _ => { return e }
-                }
                 loop {
                     match self.quantified.compare(state) {
                         CompareResult::Match(0) => {
+                            let pos = state.pos();
                             match self.next.compare(state) {
                                 CompareResult::Match(0) => { return CompareResult::Match(0) },
                                 _ => {},
                             }
+                            state.set_pos(pos);
                         },
-                        e @ _ => { return e },
+                        r => { return r },
                     }
                 }
             },
             Quantification::Optional => {
-                match first {
-                    CompareResult::Match(0) => {},
+                let start = state.pos();
+                match self.quantified.compare(state) {
+                    CompareResult::Match(0) => match self.next.compare(state) {
+                        r @ CompareResult::Match(0) => { return r; },
+                        _ => { state.set_pos(start); },
+                    },
                     _ => { state.set_pos(start); }
                 }
                 self.next.compare(state)

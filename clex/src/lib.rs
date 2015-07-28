@@ -1,17 +1,20 @@
 use std::fmt;
+use std::collections::HashMap;
+use std::any::Any;
 
 pub mod matchers;
 
-#[derive(Clone, Debug)]
+#[derive(Debug)]
 pub struct MatchState<'a> {
     pos: usize,
     data: &'a [u8],
     captured: Vec<MatchCapture>,
+    userdata: HashMap<String, Box<Any>>,
 }
 
 impl<'a> MatchState<'a> {
     pub fn new(data: &'a [u8]) -> MatchState<'a> {
-        MatchState { pos: 0, data: data, captured: Vec::new() }
+        MatchState { pos: 0, data: data, captured: Vec::new(), userdata: HashMap::new() }
     }
 
     pub fn pos(&self) -> usize {
@@ -61,6 +64,10 @@ impl<'a> MatchState<'a> {
 
     pub fn push_capture(&mut self, captured: MatchCapture) {
         self.captured.push(captured)
+    }
+
+    pub fn get_ud(&mut self) -> &mut HashMap<String, Box<Any>> {
+        &mut self.userdata
     }
 }
 
