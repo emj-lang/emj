@@ -1,11 +1,92 @@
 // Groups
 
 use std::fmt;
+use {PatternElement, MatchState, CompareResult, MatchCapture, Next};
 
-use {PatternElement, MatchState, CompareResult, MatchCapture};
+use super::slice::Slice;
 
-// Prime example of the "Userdata" feature.
-#[derive(Copy, Clone)]
+pub struct Group {
+    capture: bool,
+    handle_next: bool,
+    children: Vec<Box<PatternElement>>,
+}
+
+impl Group {
+    pub fn new(capture: bool) -> Group {
+        Group { capture: capture, handle_next: false, children: Vec::new() }
+    }
+
+    pub fn push_child(&mut self, child: Box<PatternElement>) {
+        self.handle_next = self.handle_next || child.handle_next();
+        self.children.push(child)
+    }
+}
+
+impl PatternElement for Group {
+    #[allow(unused_variables)]
+    #[allow(unused_mut)]
+    fn compare_next(&self, state: &mut MatchState, next: Option<&Next>) -> CompareResult {
+        // TODO check
+        // NB: can be simplified by calling into a Slice element, as they have extremely similar code
+        let start = state.pos();
+        let mut endpos = start;
+        let mut result = CompareResult::Match(0);
+        let mut iter = self.children.iter().enumerate();
+        while let Some((i, c)) = iter.next() {
+            if c.handle_next() {
+                let slice = Slice::group(&self.children[i+1..]);
+                let v = c.compare_next(state, Some(&Next::new(&slice, next)));
+                let (count, pos) = Slice::pop_group(state);
+                match v {
+                    CompareResult::Match(0) => {
+                        iter.nth(count);
+                    },
+                    r => if let CompareResult::Match(0) = result {
+                        result = r;
+                    },
+                }
+            } else {
+                match c.compare(state) {
+                    CompareResult::Match(0) => {},
+                    r => if let CompareResult::Match(0) = result {
+                        result = r;
+                    },
+                }
+            }
+        }
+        if self.capture {
+            if let CompareResult::Match(0) = result {
+                if self.children.is_empty() {
+                    state.push_capture(MatchCapture::Position(start))
+                } else {
+                    let end = state.pos();
+                    state.push_capture(MatchCapture::Bytes { start: start, end: end })
+                }
+            }
+        }
+        result
+    }
+
+    fn handle_next(&self) -> bool {
+        self.handle_next
+    }
+}
+
+impl fmt::Display for Group {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        try!(write!(f, "("));
+        if !self.capture {
+            try!(write!(f, "*"));
+        }
+        for c in self.children.iter() {
+            try!(write!(f, "{}", c));
+        }
+        write!(f, ")")
+    }
+}
+
+
+/*#[derive(Copy, Clone)]
 struct GroupInfo {
     capture: bool,
     start: usize,
@@ -111,4 +192,4 @@ impl fmt::Display for GroupClose {
         try!(write!(f, ")"));
         write!(f, "{}", self.next)
     }
-}
+}*/

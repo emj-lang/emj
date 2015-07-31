@@ -4,7 +4,7 @@ use std::fmt;
 use {PatternElement, MatchState, CompareResult};
 
 
-pub struct Null; // "Null Matcher" is used when a matcher requires a "next" (TODO is this needed?)
+/*pub struct Null; // "Null Matcher" is used when a matcher requires a "next". (TODO is this needed?)
 
 impl fmt::Display for Null {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
@@ -13,11 +13,17 @@ impl fmt::Display for Null {
 }
 
 impl PatternElement for Null {
-    #[allow(unused_variables)]
-    fn compare(&self, state: &mut MatchState) -> CompareResult {
-        CompareResult::Match(0)
+    fn compare_next(&self, state: &mut MatchState, next: Option<&Next>) -> CompareResult {
+        match next {
+            Some(e) => e.compare(state),
+            None => CompareResult::Match(0),
+        }
     }
-}
+
+    fn handle_next(&self) -> bool {
+        true
+    }
+}*/
 
 
 pub struct Start;

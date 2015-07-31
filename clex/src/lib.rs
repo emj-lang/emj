@@ -83,8 +83,42 @@ pub enum CompareResult {
     End, // for end of string
 }
 
+#[derive(Copy, Clone)]
+pub struct Next<'a, 'b> {
+    element: &'a PatternElement,
+    next: Option<&'b Next<'b, 'b>>,
+}
+
+impl<'a, 'b> Next<'a, 'b> {
+    pub fn new(element: &'a PatternElement, next: Option<&'b Next>) -> Next<'a, 'b> {
+        Next { element: element, next: next }
+    }
+
+    pub fn element(&self) -> &PatternElement {
+        self.element
+    }
+
+    pub fn next(&self) -> Option<&Next> {
+        self.next
+    }
+
+    pub fn compare(&self, state: &mut MatchState) -> CompareResult {
+        self.element.compare_next(state, self.next)
+    }
+}
+
 pub trait PatternElement : fmt::Display {
-    fn compare(&self, &mut MatchState) -> CompareResult;
+    fn compare(&self, state: &mut MatchState) -> CompareResult {
+        self.compare_next(state, None)
+    }
+
+    fn compare_next(&self, state: &mut MatchState, Option<&Next>) -> CompareResult {
+        self.compare(state)
+    }
+
+    fn handle_next(&self) -> bool {
+        false
+    }
 }
 
 #[allow(unused_variables)]

@@ -3,6 +3,8 @@
 use std::fmt;
 use {PatternElement, MatchState, CompareResult};
 
+use super::slice::Slice;
+
 pub struct Root {
     children: Vec<Box<PatternElement>>,
 }
@@ -18,16 +20,12 @@ impl Root {
 }
 
 impl PatternElement for Root {
+    // Root elements don't handle continuations, mostly because they're, well, root elements.
+    // NB: simplified by calling into a Slice element, as they basically have the same code.
     fn compare(&self, state: &mut MatchState) -> CompareResult {
-        let mut result = CompareResult::Match(0);
-        for c in self.children.iter() {
-            match c.compare(state) {
-                CompareResult::Match(0) => {},
-                r => if let CompareResult::Match(0) = result {
-                    result = r;
-                },
-            }
-        }
+        let slice = Slice::simple(&self.children[..]);
+        let result = slice.compare_next(state, None);
+        Slice::pop(state);
         result
     }
 }
