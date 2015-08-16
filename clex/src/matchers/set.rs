@@ -101,3 +101,86 @@ impl fmt::Display for Set {
         write!(f, "{}", self.next)
     }
 }
+
+// "Proxy" State
+
+use std::collections::HashMap;
+use std::any::Any;
+use MatchCapture;
+
+#[allow(dead_code)] // TODO
+struct MatchStateProxy<'a> {
+    state: &'a mut MatchState,
+    captured: Vec<MatchCapture>,
+}
+
+#[allow(dead_code)]
+impl<'a> MatchStateProxy<'a> {
+    fn new(state: &'a mut MatchState) -> MatchStateProxy<'a> {
+        MatchStateProxy { state: state, captured: Vec::new(), }
+    }
+
+    fn our_captures(&self) -> usize {
+        self.captured.len()
+    }
+
+    fn inject(&mut self) {
+        for v in self.captured.iter() {
+            self.state.push_capture(*v)
+        }
+    }
+}
+
+impl<'a> MatchState for MatchStateProxy<'a> {
+    fn pos(&self) -> usize {
+        self.state.pos()
+    }
+
+    fn set_pos(&mut self, pos: usize) -> bool {
+        self.state.set_pos(pos)
+    }
+
+    fn max_pos(&self) -> usize {
+        self.state.max_pos()
+    }
+
+    fn has_next(&self) -> bool {
+        self.state.has_next()
+    }
+
+    unsafe fn unsafe_next(&mut self) -> u8 {
+        self.state.unsafe_next()
+    }
+
+    fn next(&mut self) -> Option<u8> {
+        self.state.next()
+    }
+
+    fn get(&self) -> u8 {
+        self.state.get()
+    }
+
+    fn captures(&self) -> usize {
+        self.state.captures() + self.captured.len()
+    }
+
+    fn get_capture(&self, mut index: usize) -> Option<MatchCapture> {
+        if index >= self.state.captures() {
+            index -= self.state.captures()
+        } else {
+            return self.state.get_capture(index)
+        }
+        match self.captured.get(index) {
+            Some(c) => Some(*c),
+            None => None,
+        }
+    }
+
+    fn push_capture(&mut self, captured: MatchCapture) {
+        self.captured.push(captured)
+    }
+
+    fn get_ud(&mut self) -> &mut HashMap<String, Box<Any>> {
+        self.state.get_ud()
+    }
+}

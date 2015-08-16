@@ -25,7 +25,7 @@ impl PatternElement for Root {
     fn compare(&self, state: &mut MatchState) -> CompareResult {
         let slice = Slice::simple(&self.children[..]);
         let result = slice.compare_next(state, None);
-        Slice::pop(state);
+        //Slice::pop(state);
         result
     }
 }

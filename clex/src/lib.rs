@@ -3,72 +3,21 @@ use std::collections::HashMap;
 use std::any::Any;
 
 pub mod matchers;
+pub mod matchstate;
+pub use matchstate::MatcherState;
 
-#[derive(Debug)]
-pub struct MatchState<'a> {
-    pos: usize,
-    data: &'a [u8],
-    captured: Vec<MatchCapture>,
-    userdata: HashMap<String, Box<Any>>,
-}
-
-impl<'a> MatchState<'a> {
-    pub fn new(data: &'a [u8]) -> MatchState<'a> {
-        MatchState { pos: 0, data: data, captured: Vec::new(), userdata: HashMap::new() }
-    }
-
-    pub fn pos(&self) -> usize {
-        self.pos
-    }
-
-    pub fn set_pos(&mut self, pos: usize) -> bool {
-        if pos > self.data.len() {
-            return false
-        }
-        self.pos = pos;
-        true
-    }
-
-    pub fn max_pos(&self) -> usize {
-        self.data.len()
-    }
-
-    pub fn has_next(&self) -> bool {
-        self.pos < self.data.len()
-    }
-
-    pub unsafe fn unsafe_next(&mut self) -> u8 {
-        let x = self.pos;
-        self.pos += 1;
-        self.data[x]
-    }
-
-    pub fn next(&mut self) -> Option<u8> {
-        if self.has_next() {
-            Some(unsafe { self.unsafe_next() })
-        } else {
-            None
-        }
-    }
-
-    pub fn get(&self) -> u8 {
-        self.data[self.pos]
-    }
-
-    pub fn get_capture(&self, index: usize) -> Option<MatchCapture> {
-        match self.captured.get(index) {
-            Some(c) => Some(*c),
-            None => None,
-        }
-    }
-
-    pub fn push_capture(&mut self, captured: MatchCapture) {
-        self.captured.push(captured)
-    }
-
-    pub fn get_ud(&mut self) -> &mut HashMap<String, Box<Any>> {
-        &mut self.userdata
-    }
+pub trait MatchState {
+    fn pos(&self) -> usize;
+    fn set_pos(&mut self, pos: usize) -> bool;
+    fn max_pos(&self) -> usize;
+    fn has_next(&self) -> bool;
+    unsafe fn unsafe_next(&mut self) -> u8;
+    fn next(&mut self) -> Option<u8>;
+    fn get(&self) -> u8;
+    fn captures(&self) -> usize;
+    fn get_capture(&self, index: usize) -> Option<MatchCapture>;
+    fn push_capture(&mut self, captured: MatchCapture);
+    fn get_ud(&mut self) -> &mut HashMap<String, Box<Any>>;
 }
 
 #[derive(Copy, Clone, Debug)]
@@ -121,8 +70,32 @@ pub trait PatternElement : fmt::Display {
     }
 }
 
-#[allow(unused_variables)]
 pub fn parse(pattern: &[u8]) -> Result<Box<PatternElement>, String> {
-    // TODO
-    unimplemented!()
+    let mut root = matchers::Root::new(vec![]);
+    let mut iter = pattern.iter();
+    while let Some(&c) = iter.next() {
+        match c {
+            b'%' => {
+                match iter.next() {
+                    Some(&c) => {
+                        match c {
+                            c @ b'A' ... b'Z' | c @ b'a' ... b'z' => {
+                                let mut s = "Unknown escape ".to_string();
+                                s.push(c as char);
+                                return Err(s);
+                            },
+                            c => root.push_child(Box::new(matchers::Byte::new(c, true))),
+                        }
+                    },
+                    None => {
+                        return Err("".to_string());
+                    }
+                }
+            }
+            c => {
+                root.push_child(Box::new(matchers::Byte::new(c, false)))
+            },
+        }
+    }
+    Ok(Box::new(root))
 }
