@@ -2,3 +2,6 @@
 name = "emj"
 version = "0.1.0"
 authors = ["SoniEx2 <endermoneymod@gmail.com>"]
+
+[dependencies.clex]
+git = "https://github.com/emj-lang/clex"
